@@ -48,9 +48,12 @@ class State:
 
 
 class TreeNode:
-    def __init__(self, state: State, children: List[TreeNode] = [], parent: TreeNode = None):
+    def __init__(self, state: State, children: List[TreeNode] = None, parent: TreeNode = None):
         self.state = state
-        self.children = children
+        if children is None:
+            self.children = []
+        else:
+            self.children = children
         self.parent = parent
 
     def generate_children(self):
@@ -83,7 +86,7 @@ class TreeNode:
                 child_state.boat_side = Side.LEFT
 
             if child_state.is_valid():
-                child_node: TreeNode = TreeNode(child_state, [], self)
+                child_node: TreeNode = TreeNode(child_state, parent=self)
                 self.children.append(child_node)
 
 
@@ -113,16 +116,18 @@ class CannibalsAndPriestsProblem:
         path: List[TreeNode] = [self.decision_tree.root]
         solution_found: bool = False
         current_node_index: int = 0
-
+        current_node: TreeNode = path[current_node_index]
         while not solution_found and current_node_index < len(path):
-            current_node: TreeNode = path[current_node_index]
             if self.is_final_state(current_node):  # nó solução encontrado
                 solution_found = True
+                current_node_index -= 1
             else:  # percorre a árvore de decisões com uma estratégia de busca em largura
                 if len(current_node.children) == 0:
                     current_node.generate_children()
                     path.extend(current_node.children)
             current_node_index += 1
+            current_node = path[current_node_index]
+
 
         if solution_found:
             solution_path: List[TreeNode] = self.decision_tree.find_path_to_root(current_node)
@@ -237,7 +242,8 @@ def main():
         print("\n\nPrograma sendo executado com alguns argumentos default.")
         pass
 
-    params = generate_problem_params(total_cannibals, total_priests, cannibals_to_save, priests_to_save, boat_initial_side)
+    params = generate_problem_params(total_cannibals, total_priests, cannibals_to_save, priests_to_save,
+                                     boat_initial_side)
 
     if params.boat_initial_side == Side.LEFT:  # margem de origem dos canibais e missionários é a ESQUERDA
         initial_state: State = State(params.cannibals_total_qt, params.priests_total_qt, 0, 0,
@@ -256,4 +262,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
