@@ -4,6 +4,7 @@ from enum import Enum
 import random
 import sys
 
+
 class Side(Enum):
     LEFT = "esquerda"
     RIGHT = "direita"
@@ -232,9 +233,8 @@ def main():
             boat_initial_side = Side.LEFT
         elif initial_side in ["R", "r"]:
             boat_initial_side = Side.RIGHT
-
     except IndexError:
-        print("\n\nPrograma sendo executado com argumentos default.")
+        print("\n\nPrograma sendo executado com alguns argumentos default.")
         pass
 
     params = generate_problem_params(total_cannibals, total_priests, cannibals_to_save, priests_to_save, boat_initial_side)
