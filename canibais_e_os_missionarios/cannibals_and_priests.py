@@ -140,7 +140,9 @@ class CannibalsAndPriestsProblem:
         else:
             condition1: bool = node.state.cannibals_on_left == self.problem_params.cannibals_to_save
             condition2: bool = node.state.priests_on_left == self.problem_params.priests_to_save
-        return condition1 and condition2
+
+        return (condition1 or self.problem_params.cannibals_to_save == -1) and \
+               (condition2 or self.problem_params.priests_to_save == -1)
 
 
 # método para descrever os passos realizados para obter a solução da instância do problema
@@ -180,7 +182,7 @@ def print_solution(solution_path: List[TreeNode]):
         else:
             print("Estado atual\n", solution_path[index].state)
 
-    print("\nForam executados {} passos para encontrar a solução.\n\n".format(len(solution_path)))
+    print("\nForam executados {} passos para encontrar a solução.\n\n".format(len(solution_path) - 1))
 
 
 def generate_problem_params() -> ProblemParams:
@@ -188,6 +190,7 @@ def generate_problem_params() -> ProblemParams:
     cannibals_qt: int = 3  # total de canibais
     priests_qt: int = 3  # total de missionários
     boat_initial_side: Side = Side.LEFT  # margem de origem dos missionários e canibais
+    # use -1 para os seguintes parâmetros para tornar opcional salvar os membros do grupo correspondente
     cannibals_to_save: int = 3  # quantidade de canibais que devem chegar à outra margem do rio
     priests_to_save: int = 3  # quantidade de missionários que devem chegar à outra margem do rio
 
