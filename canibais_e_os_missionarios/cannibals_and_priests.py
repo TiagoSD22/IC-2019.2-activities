@@ -128,7 +128,6 @@ class CannibalsAndPriestsProblem:
             current_node_index += 1
             current_node = path[current_node_index]
 
-
         if solution_found:
             solution_path: List[TreeNode] = self.decision_tree.find_path_to_root(current_node)
             print_solution(solution_path)
