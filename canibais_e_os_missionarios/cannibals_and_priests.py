@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List
 from enum import Enum
 import random
-
+import sys
 
 class Side(Enum):
     LEFT = "esquerda"
@@ -60,6 +60,7 @@ class TreeNode:
         movement4: dict = {"cannibal": 1, "priest": 0}  # move 1 canibal e 0 missionários
         movement5: dict = {"cannibal": 0, "priest": 1}  # move 0 canibais e 1 missionário
         possible_movements.extend([movement1, movement2, movement3, movement4, movement5])
+        # permite gerar árvore de decisões de forma aleatória para encontrar diferentes soluções de uma mesma instância
         random.shuffle(possible_movements)
 
         for movement in possible_movements:  # gerando os nós de possíveis decisões
@@ -107,13 +108,7 @@ class CannibalsAndPriestsProblem:
         self.decision_tree = decision_tree
 
     def solve(self):
-        print("\n\nResolvendo instância do problema dos canibais e missionários."
-              "\n\nTotal de canibais: {}.\nTotal de missionários: {}.\nMargem de origem: {}.\n"
-              "\n\nCondição de sucesso:\nAtravessar {} canibais.\nAtravessar {} missionários."
-              .format(self.problem_params.cannibals_total_qt, self.problem_params.priests_total_qt,
-                      str(self.problem_params.boat_initial_side.value).upper(), self.problem_params.cannibals_to_save,
-                      self.problem_params.priests_to_save))
-
+        self.show_header_message()
         path: List[TreeNode] = [self.decision_tree.root]
         solution_found: bool = False
         current_node_index: int = 0
@@ -145,6 +140,20 @@ class CannibalsAndPriestsProblem:
 
         return (condition1 or self.problem_params.cannibals_to_save == -1) and \
                (condition2 or self.problem_params.priests_to_save == -1)
+
+    def show_header_message(self):
+        cannibals_to_save_msg: str = str(self.problem_params.cannibals_to_save)
+        if cannibals_to_save_msg == "-1":
+            cannibals_to_save_msg = "qualquer quantidade de"
+        priests_to_save_msg: str = str(self.problem_params.priests_to_save)
+        if priests_to_save_msg == "-1":
+            priests_to_save_msg = "qualquer quantidade de"
+        print("\n\nResolvendo instância do problema dos canibais e missionários."
+              "\n\nTotal de canibais: {}.\nTotal de missionários: {}.\nMargem de origem: {}.\n"
+              "\n\nCondição de sucesso:\nAtravessar: {} canibais.\nAtravessar: {} missionários.\n\n"
+              .format(self.problem_params.cannibals_total_qt, self.problem_params.priests_total_qt,
+                      str(self.problem_params.boat_initial_side.value).upper(), cannibals_to_save_msg,
+                      priests_to_save_msg))
 
 
 # método para descrever os passos realizados para obter a solução da instância do problema
@@ -189,24 +198,46 @@ def print_solution(solution_path: List[TreeNode]):
 
 def generate_problem_params(total_cannibals: int, total_priests: int, 
                             cannibals_to_save: int, priests_to_save: int, 
-                            initial_side: Side) -> ProblemParams:
-    # parâmetros de configuração do problema
-    cannibals_qt: int = total_cannibals  # total de canibais
-    priests_qt: int = total_priests  # total de missionários
-    boat_initial_side: Side = initial_side  # margem de origem dos missionários e canibais
-    # use -1 para os seguintes parâmetros para tornar opcional salvar os membros do grupo correspondente
-    cannibals_to_save_qt: int = cannibals_to_save  # quantidade de canibais que devem chegar à outra margem do rio
-    priests_to_save_qt: int = priests_to_save  # quantidade de missionários que devem chegar à outra margem do rio
+                            boat_initial_side: Side) -> ProblemParams:
 
-    # configuração dos parâmetros do problema
-    params: ProblemParams = ProblemParams(cannibals_qt, priests_qt, boat_initial_side,
-                                          cannibals_to_save_qt, priests_to_save_qt)
+    """ Configuração dos parâmetros do problema
+    :param total_cannibals: total de canibais no problema
+    :param total_priests: total de missionários no problema
+    :param cannibals_to_save: quantidade de canibais que devem chegar à outra margem do rio (-1 para tornar opcional)
+    :param priests_to_save: quantidade de missionários que devem chegar à outra margem do rio (-1 para tornar opcional)
+    :param boat_initial_side: margem de origem dos missionários e canibais
+    :return: um objeto do tipo ProblemParams com as configurações informadas
+    """
+
+    params: ProblemParams = ProblemParams(total_cannibals, total_priests, boat_initial_side,
+                                          cannibals_to_save, priests_to_save)
 
     return params
 
 
 def main():
-    params = generate_problem_params(3, 3, 3, 3, Side.LEFT)
+    total_cannibals: int = 3
+    total_priests: int = 3
+    cannibals_to_save: int = 3
+    priests_to_save: int = 3
+    boat_initial_side: Side = Side.LEFT
+
+    try:  # caso o script seja chamado com argumentos
+        total_cannibals = int(sys.argv[1])
+        total_priests = int(sys.argv[2])
+        cannibals_to_save = int(sys.argv[3])
+        priests_to_save = int(sys.argv[4])
+        initial_side: str = sys.argv[5]
+        if initial_side in ["L", "l"]:
+            boat_initial_side = Side.LEFT
+        elif initial_side in ["R", "r"]:
+            boat_initial_side = Side.RIGHT
+
+    except IndexError:
+        print("\n\nPrograma sendo executado com argumentos default.")
+        pass
+
+    params = generate_problem_params(total_cannibals, total_priests, cannibals_to_save, priests_to_save, boat_initial_side)
 
     if params.boat_initial_side == Side.LEFT:  # margem de origem dos canibais e missionários é a ESQUERDA
         initial_state: State = State(params.cannibals_total_qt, params.priests_total_qt, 0, 0,
