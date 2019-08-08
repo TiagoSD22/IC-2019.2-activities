@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List
 from enum import Enum
+import random
 
 
 class Side(Enum):
@@ -59,6 +60,7 @@ class TreeNode:
         movement4: dict = {"cannibal": 1, "priest": 0}  # move 1 canibal e 0 missionários
         movement5: dict = {"cannibal": 0, "priest": 1}  # move 0 canibais e 1 missionário
         possible_movements.extend([movement1, movement2, movement3, movement4, movement5])
+        random.shuffle(possible_movements)
 
         for movement in possible_movements:  # gerando os nós de possíveis decisões
             child_state: State = State(self.state.cannibals_on_left, self.state.priests_on_left,
@@ -185,24 +187,26 @@ def print_solution(solution_path: List[TreeNode]):
     print("\nForam executados {} passos para encontrar a solução.\n\n".format(len(solution_path) - 1))
 
 
-def generate_problem_params() -> ProblemParams:
+def generate_problem_params(total_cannibals: int, total_priests: int, 
+                            cannibals_to_save: int, priests_to_save: int, 
+                            initial_side: Side) -> ProblemParams:
     # parâmetros de configuração do problema
-    cannibals_qt: int = 3  # total de canibais
-    priests_qt: int = 3  # total de missionários
-    boat_initial_side: Side = Side.LEFT  # margem de origem dos missionários e canibais
+    cannibals_qt: int = total_cannibals  # total de canibais
+    priests_qt: int = total_priests  # total de missionários
+    boat_initial_side: Side = initial_side  # margem de origem dos missionários e canibais
     # use -1 para os seguintes parâmetros para tornar opcional salvar os membros do grupo correspondente
-    cannibals_to_save: int = 3  # quantidade de canibais que devem chegar à outra margem do rio
-    priests_to_save: int = 3  # quantidade de missionários que devem chegar à outra margem do rio
+    cannibals_to_save_qt: int = cannibals_to_save  # quantidade de canibais que devem chegar à outra margem do rio
+    priests_to_save_qt: int = priests_to_save  # quantidade de missionários que devem chegar à outra margem do rio
 
     # configuração dos parâmetros do problema
     params: ProblemParams = ProblemParams(cannibals_qt, priests_qt, boat_initial_side,
-                                          cannibals_to_save, priests_to_save)
+                                          cannibals_to_save_qt, priests_to_save_qt)
 
     return params
 
 
 def main():
-    params = generate_problem_params()
+    params = generate_problem_params(3, 3, 3, 3, Side.LEFT)
 
     if params.boat_initial_side == Side.LEFT:  # margem de origem dos canibais e missionários é a ESQUERDA
         initial_state: State = State(params.cannibals_total_qt, params.priests_total_qt, 0, 0,
