@@ -1,8 +1,13 @@
 from __future__ import annotations
+
+import random
+import sys
 from functools import reduce
+from itertools import repeat
 from typing import List
 import operator
 import math
+import copy
 
 
 class StateMatrix:
@@ -88,16 +93,21 @@ class TreeNode:
         permutations.extend([up, down, left, right])
 
         for permutation in permutations:
-            try:
-                child_state: StateMatrix = StateMatrix(self.matrix.rows, self.matrix.columns, self.matrix.elements)
-                blank_position: tuple = self.matrix.get_blank_space_position()
+            blank_position: tuple = self.matrix.get_blank_space_position()
 
-                blank_row: int = blank_position[0]
-                blank_column: int = blank_position[1]
+            blank_row: int = blank_position[0]
+            blank_column: int = blank_position[1]
+
+            swap_row: int = permutation["row"] + blank_row
+            swap_column: int = permutation["column"] + blank_column
+            # o estado possível só será criado se a célula a ser trocada estiver dentro dos limites da matriz
+            if 0 <= swap_row < self.matrix.rows and 0 <= swap_column < self.matrix.columns:
+                # como a cópia de lista no python é, por padrão, shallow, precisamos fazer uma deep copy, pois
+                # vamos alterar a matriz de estados, mas queremos manter a matriz original inalterada
+                copy_matrix: List[List] = copy.deepcopy(self.matrix.elements)
+                child_state: StateMatrix = StateMatrix(self.matrix.rows, self.matrix.columns, copy_matrix)
+
                 blank_value: int = self.matrix.rows * self.matrix.columns
-
-                swap_row: int = permutation["row"] + blank_row
-                swap_column: int = permutation["column"] + blank_column
                 swap_value: int = child_state.elements[swap_row][swap_column]
 
                 child_state.elements[swap_row][swap_column] = blank_value
@@ -105,21 +115,67 @@ class TreeNode:
 
                 node_child: TreeNode = TreeNode(child_state, self.tree_layer + 1, parent=self)
                 self.children.append(node_child)
-            except IndexError:
-                pass
+
+
+class StateTree:
+    def __init__(self, root: TreeNode):
+        self.root = root
+
+    # método para encontrar o caminho de um nó até a raíz da árvore
+    def find_path_to_root(self, node: TreeNode) -> List[TreeNode]:
+        path: List[TreeNode] = []
+        current_node: TreeNode = node
+        while current_node != self.root:
+            path.append(current_node)
+            current_node = current_node.parent
+        path.append(current_node)
+        path.reverse()  # a lista está de trás para frente, então precisamos usar o reverse
+        return path
+
+
+class SlidePuzzleSolver:
+    def __init__(self, decision_tree: StateTree):
+        self.decision_tree: StateTree = decision_tree
+        self.puzzle_rows: int = decision_tree.root.matrix.rows
+        self.puzzle_columns: int = decision_tree.root.matrix.columns
+
+    def solve(self):
+        self.show_header_message()
+
+    def show_header_message(self):
+        print("\n\nResolvendo instância do problema quebra cabeça deslizante.\nNúmero de linhas: {}"
+              "\nNúmero de colunas: {}\n\nEstado inicial: {}\n\n".format(self.puzzle_rows, self.puzzle_columns,
+                                                                         self.decision_tree.root.matrix))
+
+
+def generate_random_matrix(order: int) -> StateMatrix:
+    elements: List = [x + 1 for x in range(order**2)]
+    random.shuffle(elements)
+    matrix: List[List] = [elements[index:index + order] for index in range(0, len(elements), order)]
+    state_matrix: StateMatrix = StateMatrix(order, order, matrix)
+    return state_matrix
 
 
 def main():
-    print("Executando main")
-    #elements = [[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14,15], [16,17,18,19,20], [21,22,23,24,25]]
-    #elements = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
-    elements = [[1,9,3], [4,5,6], [7,8,2]]
-    m: StateMatrix = StateMatrix(3, 3, elements)
-    node: TreeNode = TreeNode(m, 0)
-    node.generate_possible_states()
-    print("Estado original: ", node.matrix)
-    for child in node.children:
-        print("\nEstado possivel: ", child.matrix)
+    matrix_oder: int = 3
+    try:
+        arg: int = int(sys.argv[1])
+        if arg > 1:
+            matrix_oder = arg
+            print("\nUtilizando valor argumento {} como ordem da matriz do puzzle.".format(matrix_oder))
+        else:
+            print("\nUtilizando valor padrão {} como ordem da matriz do puzzle, pois o valor passado como "
+                  "argumento ({}) é menor que o mínimo aceitável(2).".format(matrix_oder, int(sys.argv[1])))
+    except (ValueError, IndexError):
+        print("\nUtilizando valor padrão {} como ordem da matriz do puzzle.".format(matrix_oder))
+        pass
+
+    initial_matrix_state: StateMatrix = generate_random_matrix(matrix_oder)
+    root: TreeNode = TreeNode(initial_matrix_state, 0)
+    tree: StateTree = StateTree(root)
+
+    slide_puzzle_solver: SlidePuzzleSolver = SlidePuzzleSolver(tree)
+    slide_puzzle_solver.solve()
 
 
 if __name__ == '__main__':
