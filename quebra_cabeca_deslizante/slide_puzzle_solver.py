@@ -7,6 +7,7 @@ o problema a ser resolvido será uma matriz de 3 linhas e 3 colunas (3x3), mas o
 maiores, para isso, execute-o passando como argumento o valor a ser usado como ordem da matriz.
 """
 
+
 from __future__ import annotations
 from functools import reduce
 from typing import List
