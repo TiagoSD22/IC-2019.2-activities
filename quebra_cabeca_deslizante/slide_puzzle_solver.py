@@ -1,11 +1,23 @@
+#!/usr/bin/env python
+"""Implementa um solucionador para um slide puzzle NxN
+
+Este código implementa classes e modelos para solucionar instâncias de um problema slide puzzle de ordem NxN.
+A estratégia para resolução é a de busca em largura em árvore de decisões utilizando heurísticas tipo A*. Por padrão,
+o problema a ser resolvido será uma matriz de 3 linhas e 3 colunas (3x3), mas o programa é capaz de resolver instâncias
+maiores, para isso, execute-o passando como argumento o valor a ser usado como ordem da matriz.
+"""
+
 from __future__ import annotations
 from functools import reduce
 from typing import List
 import operator
 import random
-import sys
 import math
 import copy
+import sys
+
+__author__ = "Tiago Siqueira Dionizio"
+__email__ = "tiagosdionizio@gmail.com"
 
 
 class StateMatrix:
@@ -76,17 +88,17 @@ class StateMatrix:
                     inversions += 1
         return inversions
 
-    """
-    Para um problema NxN ser solucionável, as seguintes condições devem ser respeitadas:
-    1. Se N é impar, o número de inversões no estado inicial deve ser par
-    2. Se N é par, o problema será solucionável se:
-        2.1. A célula vazia está em uma linha de índice par, contando de baixo para cima e o número
-             de inversões é ímpar.
-        2.2. A célula vazia está em uma linha de índice ímpar, contando de baixo para cima e o número
-             de inversões é par.
-    Se estas condições não forem atendidas, o problema NÃO apresentará solução!
-    """
     def is_solvable(self) -> (bool, str):
+        """
+        Para um problema NxN ser solucionável, as seguintes condições devem ser respeitadas:
+        1. Se N é impar, o número de inversões no estado inicial deve ser par
+        2. Se N é par, o problema será solucionável se:
+            2.1. A célula vazia está em uma linha de índice par, contando de baixo para cima e o número
+                 de inversões é ímpar.
+            2.2. A célula vazia está em uma linha de índice ímpar, contando de baixo para cima e o número
+                 de inversões é par.
+        Se estas condições não forem atendidas, o problema NÃO apresentará solução!
+        """
         n: int = self.rows
         inversions: int = self.get_inversions_number()
         msg: str = ""
@@ -123,11 +135,12 @@ class TreeNode:
 
     # heurística para estimar quão distante da solução o nó está, quanto menor o valor, melhor
     def get_distance_from_solution(self) -> int:
-        distance: int = self.tree_layer
+        blank_value: int = self.matrix.rows * self.matrix.columns
 
+        distance: int = self.tree_layer
         distance += reduce(operator.add, map(self.matrix.calculate_manhattan_distance,
                                              [item for sublist in self.matrix.elements for item in sublist
-                                              if item != self.matrix.rows * self.matrix.columns]))
+                                              if item != blank_value]))
 
         return distance
 
@@ -196,6 +209,10 @@ class SlidePuzzleSolver:
         solution_found: bool = False
         current_node: TreeNode = self.decision_tree.root
         final_node: TreeNode = self.decision_tree.root
+        if current_node.matrix.is_solved():
+            solution_found = True
+            final_node = current_node
+
         while not solution_found:
             current_node.generate_possible_states()
             for x in current_node.children:
@@ -218,7 +235,6 @@ class SlidePuzzleSolver:
 
     @staticmethod
     def show_solution_steps(solution_path: List[TreeNode]):
-        index: int = 0
         print("Solução encontrada\n\n")
         for index in range(len(solution_path) - 1):
             if index == 0:
@@ -240,7 +256,7 @@ class SlidePuzzleSolver:
                     step: str = "->Mova o bloco vazio para a DIREITA."
             print(step, "\n")
 
-        print("\nEstado final(Problema resolvido):\n", solution_path[index + 1].matrix)
+        print("\nEstado final(Problema resolvido):\n", solution_path[len(solution_path) - 1].matrix)
         print("\nForam executados {} passos para encontrar a solução.\n\n".format(len(solution_path) - 1))
 
 

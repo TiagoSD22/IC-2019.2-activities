@@ -1,9 +1,23 @@
+#!/usr/bin/env python
+"""Implementa um solucionador para o problema dos canibais e missionários
+
+Este código implementa classes e modelos para solucionar instâncias de um problema dos missionários e canibais.
+O problema consiste em atravessar um grupo formado, por padrão, por 3 canibais e 3 missionários, de um lado do rio para
+o outro lado. Para isso, existe uma canoa capaz de transportar duas pessoas por vez. Contudo, existe uma restrição para
+o problema, o número de canibais de um lado do rio não pode ser maior do que o de missionários no mesmo lado, pois se
+isso acontecer, os canibais comerão os missionários. Para alterar parâmetros como a quantidade de missionários ou de
+canibais que devem ser salvos, execute o script passando como argumento o referido valor, ou -1 para tornar opcional
+salvar alguém daquele grupo.
+"""
+
 from __future__ import annotations
 from typing import List
 from enum import Enum
 import random
 import sys
 
+__author__ = "Tiago Siqueira Dionizio"
+__email__ = "tiagosdionizio@gmail.com"
 
 class Side(Enum):
     LEFT = "esquerda"
