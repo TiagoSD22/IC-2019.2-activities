@@ -1,11 +1,9 @@
 from __future__ import annotations
-
-import random
-import sys
 from functools import reduce
-from itertools import repeat
 from typing import List
 import operator
+import random
+import sys
 import math
 import copy
 
@@ -38,6 +36,7 @@ class StateMatrix:
                     return False
         return True
 
+    # retorna uma tupla (linha, coluna) que informa a posição do elemento buscado na matriz
     def get_element_position(self, element: int) -> tuple:
         cords: List[tuple] = [(ind, self.elements[ind].index(element)) for ind in range(len(self.elements))
                               if element in self.elements[ind]]
@@ -64,6 +63,52 @@ class StateMatrix:
         manhattan_distance: int = row_distance + column_distance
         return manhattan_distance
 
+    def get_inversions_number(self) -> int:
+        inversions: int = 0
+        elements_list: List = [item for sublist in self.elements for item in sublist]
+        blank_value: int = self.rows * self.columns
+        for i in range((self.rows * self.columns) - 1):
+            for j in range(i+1, (self.rows * self.columns)):
+                # se o valor da célula não for vazio e ela for maior do que uma célula subsequente não vazia,
+                # então temos uma inversão
+                if elements_list[i] != blank_value and elements_list[j] != blank_value \
+                        and elements_list[i] > elements_list[j]:
+                    inversions += 1
+        return inversions
+
+    """
+    Para um problema NxN ser solucionável, as seguintes condições devem ser respeitadas:
+    1. Se N é impar, o número de inversões no estado inicial deve ser par
+    2. Se N é par, o problema será solucionável se:
+        2.1. A célula vazia está em uma linha de índice par, contando de baixo para cima e o número
+             de inversões é ímpar.
+        2.2. A célula vazia está em uma linha de índice ímpar, contando de baixo para cima e o número
+             de inversões é par.
+    Se estas condições não forem atendidas, o problema NÃO apresentará solução!
+    """
+    def is_solvable(self) -> (bool, str):
+        n: int = self.rows
+        inversions: int = self.get_inversions_number()
+        msg: str = ""
+        if n % 2 == 1:  # n é ímpar
+            solvable: bool = inversions % 2 == 0
+            if not solvable:
+                msg = "Problema de ordem ímpar({}), mas com quantidade ímpar de inversões({} inversões).\n\n"\
+                    .format(n, inversions)
+        else:  # n é par
+            blank_position_row: int = self.rows - self.get_blank_space_position()[0]
+            if blank_position_row % 2 == 0:  # a célula vazia está em uma linha par(de baixo para cima)
+                solvable: bool = inversions % 2 == 1
+                if not solvable:
+                    msg = "Problema de ordem par({}), célula vazia em linha par, de baixo para cima, ({}), mas " \
+                               "com quantidade par de inversões({}).\n".format(n, blank_position_row, inversions)
+            else:  # a célula vazia está em uma linha ímpar(de baixo para cima)
+                solvable: bool = inversions % 2 == 0
+                if not solvable:
+                    msg = "Problema de ordem par({}), célula vazia em linha ímpar, de baixo para cima, ({}), " \
+                               "mas com quantidade ímpar de inversões({}).\n".format(n, blank_position_row, inversions)
+        return solvable, msg
+
 
 class TreeNode:
     def __init__(self, matrix: StateMatrix, tree_layer: int, children: List[TreeNode] = None, parent: TreeNode = None):
@@ -74,13 +119,15 @@ class TreeNode:
             self.children = children
         self.parent = parent
         self.tree_layer = tree_layer
+        self.distance_from_solution = self.get_distance_from_solution()
 
     # heurística para estimar quão distante da solução o nó está, quanto menor o valor, melhor
     def get_distance_from_solution(self) -> int:
         distance: int = self.tree_layer
 
         distance += reduce(operator.add, map(self.matrix.calculate_manhattan_distance,
-                                             [item for sublist in self.matrix.elements for item in sublist]))
+                                             [item for sublist in self.matrix.elements for item in sublist
+                                              if item != self.matrix.rows * self.matrix.columns]))
 
         return distance
 
@@ -114,7 +161,11 @@ class TreeNode:
                 child_state.elements[blank_row][blank_column] = swap_value
 
                 node_child: TreeNode = TreeNode(child_state, self.tree_layer + 1, parent=self)
-                self.children.append(node_child)
+                if self.parent is not None:
+                    if node_child.matrix.elements != self.parent.matrix.elements:
+                        self.children.append(node_child)
+                else:
+                    self.children.append(node_child)
 
 
 class StateTree:
@@ -141,19 +192,68 @@ class SlidePuzzleSolver:
 
     def solve(self):
         self.show_header_message()
+        nodes_added: List[TreeNode] = []
+        solution_found: bool = False
+        current_node: TreeNode = self.decision_tree.root
+        final_node: TreeNode = self.decision_tree.root
+        while not solution_found:
+            current_node.generate_possible_states()
+            for x in current_node.children:
+                if x.matrix.is_solved():
+                    solution_found = True
+                    final_node = x
+                else:
+                    if x.matrix.elements not in [n.matrix.elements for n in nodes_added]:
+                        nodes_added.append(x)
+            nodes_added.sort(key=lambda n: n.distance_from_solution)
+            current_node = nodes_added.pop(0)
+
+        solution_path: List[TreeNode] = self.decision_tree.find_path_to_root(final_node)
+        self.show_solution_steps(solution_path)
 
     def show_header_message(self):
         print("\n\nResolvendo instância do problema quebra cabeça deslizante.\nNúmero de linhas: {}"
               "\nNúmero de colunas: {}\n\nEstado inicial: {}\n\n".format(self.puzzle_rows, self.puzzle_columns,
                                                                          self.decision_tree.root.matrix))
 
+    @staticmethod
+    def show_solution_steps(solution_path: List[TreeNode]):
+        index: int = 0
+        print("Solução encontrada\n\n")
+        for index in range(len(solution_path) - 1):
+            if index == 0:
+                print("\nEstado atual(Inicial)")
+            else:
+                print("\nEstado atual:")
+            print(solution_path[index].matrix)
+            blank_position_actual_step = solution_path[index].matrix.get_blank_space_position()
+            blank_position_next_step = solution_path[index + 1].matrix.get_blank_space_position()
+            if blank_position_actual_step[0] != blank_position_next_step[0]:  # moviento na vertical
+                if blank_position_actual_step[0] - blank_position_next_step[0] > 0:  # branco foi para cima
+                    step: str = "->Mova o bloco vazio para CIMA."
+                else:  # branco foi para baixo
+                    step: str = "->Mova o bloco vazio para BAIXO."
+            else:  # movimento na horizontal
+                if blank_position_actual_step[1] - blank_position_next_step[1] > 0:  # branco foi para a esquerda
+                    step: str = "->Mova o bloco vazio para a ESQUERDA."
+                else:  # branco foi para a direita
+                    step: str = "->Mova o bloco vazio para a DIREITA."
+            print(step, "\n")
+
+        print("\nEstado final(Problema resolvido):\n", solution_path[index + 1].matrix)
+        print("\nForam executados {} passos para encontrar a solução.\n\n".format(len(solution_path) - 1))
+
 
 def generate_random_matrix(order: int) -> StateMatrix:
-    elements: List = [x + 1 for x in range(order**2)]
-    random.shuffle(elements)
-    matrix: List[List] = [elements[index:index + order] for index in range(0, len(elements), order)]
-    state_matrix: StateMatrix = StateMatrix(order, order, matrix)
-    return state_matrix
+    solvable_matrix: bool = False
+    while not solvable_matrix:
+        elements: List = [x + 1 for x in range(order**2)]
+        random.shuffle(elements)
+        matrix: List[List] = [elements[index:index + order] for index in range(0, len(elements), order)]
+        state_matrix: StateMatrix = StateMatrix(order, order, matrix)
+        solvable_matrix = state_matrix.is_solvable()[0]
+        if solvable_matrix:
+            return state_matrix
 
 
 def main():
@@ -171,11 +271,15 @@ def main():
         pass
 
     initial_matrix_state: StateMatrix = generate_random_matrix(matrix_oder)
-    root: TreeNode = TreeNode(initial_matrix_state, 0)
-    tree: StateTree = StateTree(root)
+    solvable, msg = initial_matrix_state.is_solvable()
+    if solvable:
+        root: TreeNode = TreeNode(initial_matrix_state, 0)
+        tree: StateTree = StateTree(root)
 
-    slide_puzzle_solver: SlidePuzzleSolver = SlidePuzzleSolver(tree)
-    slide_puzzle_solver.solve()
+        slide_puzzle_solver: SlidePuzzleSolver = SlidePuzzleSolver(tree)
+        slide_puzzle_solver.solve()
+    else:
+        print("\nInstância gerada não tem solução!\n", initial_matrix_state, "\n{}".format(msg))
 
 
 if __name__ == '__main__':
