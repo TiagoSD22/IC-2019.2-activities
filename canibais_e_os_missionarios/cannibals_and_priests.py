@@ -19,6 +19,7 @@ import sys
 __author__ = "Tiago Siqueira Dionizio"
 __email__ = "tiagosdionizio@gmail.com"
 
+
 class Side(Enum):
     LEFT = "esquerda"
     RIGHT = "direita"
