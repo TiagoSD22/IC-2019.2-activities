@@ -7,12 +7,12 @@ o problema a ser resolvido será uma matriz de 3 linhas e 3 colunas (3x3), mas o
 maiores, para isso, execute-o passando como argumento o valor a ser usado como ordem da matriz.
 """
 
-
 from __future__ import annotations
 from functools import reduce
 from typing import List
 import operator
 import random
+import heapq
 import math
 import copy
 import sys
@@ -34,8 +34,8 @@ class StateMatrix:
         for i in range(self.rows):
             for j in range(self.columns):
                 msg += "|  {x:^4}  ".format(x=str(self.elements[i][j])
-                                            if self.elements[i][j] != self.rows * self.columns
-                                            else " ")  # o bloco vazio é o de maior valor na sequência do puzzle
+                if self.elements[i][j] != self.rows * self.columns
+                else " ")  # o bloco vazio é o de maior valor na sequência do puzzle
             msg += "|\n"
             if i != self.rows - 1:
                 msg += "|{}|\n".format(hyphens_qt * "-")
@@ -45,7 +45,7 @@ class StateMatrix:
     def is_solved(self) -> bool:
         for i in range(self.rows):
             for j in range(self.columns):
-                if self.elements[i][j] != self.rows*i + j + 1:
+                if self.elements[i][j] != self.rows * i + j + 1:
                     return False
         return True
 
@@ -81,7 +81,7 @@ class StateMatrix:
         elements_list: List = [item for sublist in self.elements for item in sublist]
         blank_value: int = self.rows * self.columns
         for i in range((self.rows * self.columns) - 1):
-            for j in range(i+1, (self.rows * self.columns)):
+            for j in range(i + 1, (self.rows * self.columns)):
                 # se o valor da célula não for vazio e ela for maior do que uma célula subsequente não vazia,
                 # então temos uma inversão
                 if elements_list[i] != blank_value and elements_list[j] != blank_value \
@@ -106,7 +106,7 @@ class StateMatrix:
         if n % 2 == 1:  # n é ímpar
             solvable: bool = inversions % 2 == 0
             if not solvable:
-                msg = "Problema de ordem ímpar({}), mas com quantidade ímpar de inversões({} inversões).\n\n"\
+                msg = "Problema de ordem ímpar({}), mas com quantidade ímpar de inversões({} inversões).\n\n" \
                     .format(n, inversions)
         else:  # n é par
             blank_position_row: int = self.rows - self.get_blank_space_position()[0]
@@ -114,17 +114,18 @@ class StateMatrix:
                 solvable: bool = inversions % 2 == 1
                 if not solvable:
                     msg = "Problema de ordem par({}), célula vazia em linha par, de baixo para cima, ({}), mas " \
-                               "com quantidade par de inversões({}).\n".format(n, blank_position_row, inversions)
+                          "com quantidade par de inversões({}).\n".format(n, blank_position_row, inversions)
             else:  # a célula vazia está em uma linha ímpar(de baixo para cima)
                 solvable: bool = inversions % 2 == 0
                 if not solvable:
                     msg = "Problema de ordem par({}), célula vazia em linha ímpar, de baixo para cima, ({}), " \
-                               "mas com quantidade ímpar de inversões({}).\n".format(n, blank_position_row, inversions)
+                          "mas com quantidade ímpar de inversões({}).\n".format(n, blank_position_row, inversions)
         return solvable, msg
 
 
 class TreeNode:
-    def __init__(self, matrix: StateMatrix, tree_layer: int, children: List[TreeNode] = None, parent: TreeNode = None):
+    def __init__(self, matrix: StateMatrix, tree_layer: int, children: List[TreeNode] = None, parent: TreeNode = None,
+                 ditance_from_solution: int = -1):
         self.matrix = matrix
         if children is None:
             self.children = []
@@ -132,7 +133,10 @@ class TreeNode:
             self.children = children
         self.parent = parent
         self.tree_layer = tree_layer
-        self.distance_from_solution = self.get_distance_from_solution()
+        if ditance_from_solution == -1:
+            self.distance_from_solution = self.get_distance_from_solution()
+        else:
+            self.distance_from_solution = ditance_from_solution
 
     # heurística para estimar quão distante da solução o nó está, quanto menor o valor, melhor
     def get_distance_from_solution(self) -> int:
@@ -174,12 +178,19 @@ class TreeNode:
                 child_state.elements[swap_row][swap_column] = blank_value
                 child_state.elements[blank_row][blank_column] = swap_value
 
-                node_child: TreeNode = TreeNode(child_state, self.tree_layer + 1, parent=self)
+                child_distance = self.distance_from_solution - self.matrix.calculate_manhattan_distance(swap_value)
+                child_distance += child_state.calculate_manhattan_distance(swap_value) + 1
+
+                node_child: TreeNode = TreeNode(child_state, self.tree_layer + 1, parent=self,
+                                                ditance_from_solution=child_distance)
                 if self.parent is not None:
                     if node_child.matrix.elements != self.parent.matrix.elements:
                         self.children.append(node_child)
                 else:
                     self.children.append(node_child)
+
+    def __lt__(self, other: TreeNode):  # método usado para comparação no heap
+        return self.distance_from_solution < other.distance_from_solution
 
 
 class StateTree:
@@ -206,25 +217,30 @@ class SlidePuzzleSolver:
 
     def solve(self):
         self.show_header_message()
-        nodes_added: List[TreeNode] = []
+        nodes_added: List[TreeNode] = [self.decision_tree.root]
+        execution_queue: List[TreeNode] = [self.decision_tree.root]
         solution_found: bool = False
         current_node: TreeNode = self.decision_tree.root
         final_node: TreeNode = self.decision_tree.root
+        heapq.heapify(execution_queue)
         if current_node.matrix.is_solved():
             solution_found = True
             final_node = current_node
 
         while not solution_found:
+            current_node = heapq.heappop(execution_queue)
             current_node.generate_possible_states()
-            for x in current_node.children:
-                if x.matrix.is_solved():
+            for child in current_node.children:
+                if child.matrix.is_solved():
                     solution_found = True
-                    final_node = x
+                    final_node = child
                 else:
-                    if x.matrix.elements not in [n.matrix.elements for n in nodes_added]:
-                        nodes_added.append(x)
-            nodes_added.sort(key=lambda n: n.distance_from_solution)
-            current_node = nodes_added.pop(0)
+                    condition1: bool = child.matrix.elements not in [node.matrix.elements for node in execution_queue]
+                    condition2: bool = child.matrix.elements not in [node.matrix.elements for node in nodes_added]
+                    if condition1 and condition2:
+                        heapq.heappush(execution_queue, child)
+                        nodes_added.append(child)
+                        execution_queue.append(child)
 
         solution_path: List[TreeNode] = self.decision_tree.find_path_to_root(final_node)
         self.show_solution_steps(solution_path)
@@ -264,7 +280,7 @@ class SlidePuzzleSolver:
 def generate_random_matrix(order: int) -> StateMatrix:
     solvable_matrix: bool = False
     while not solvable_matrix:
-        elements: List = [x + 1 for x in range(order**2)]
+        elements: List = [x + 1 for x in range(order ** 2)]
         random.shuffle(elements)
         matrix: List[List] = [elements[index:index + order] for index in range(0, len(elements), order)]
         state_matrix: StateMatrix = StateMatrix(order, order, matrix)
