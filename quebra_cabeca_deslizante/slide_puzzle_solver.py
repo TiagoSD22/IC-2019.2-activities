@@ -9,11 +9,11 @@ maiores, para isso, execute-o passando como argumento o valor a ser usado como o
 
 from __future__ import annotations
 from functools import reduce
-from typing import List
+from typing import List, Set
+from decimal import Decimal
 import operator
 import random
 import heapq
-import math
 import copy
 import sys
 
@@ -63,7 +63,7 @@ class StateMatrix:
 
     def calculate_manhattan_distance(self, element: int) -> int:
         if element not in [item for sublist in self.elements for item in sublist]:
-            return math.inf  # se o elemento não existe na matriz sua distância é infinita
+            return Decimal('Infinity')  # se o elemento não existe na matriz sua distância é infinita
 
         row_expected: int = (element - 1) // self.columns
         column_expected: int = (element - 1) % self.rows
@@ -217,7 +217,7 @@ class SlidePuzzleSolver:
 
     def solve(self):
         self.show_header_message()
-        nodes_added: List[TreeNode] = [self.decision_tree.root]
+        nodes_added: Set[TreeNode] = set()
         execution_queue: List[TreeNode] = [self.decision_tree.root]
         solution_found: bool = False
         current_node: TreeNode = self.decision_tree.root
@@ -229,18 +229,15 @@ class SlidePuzzleSolver:
 
         while not solution_found:
             current_node = heapq.heappop(execution_queue)
+            nodes_added.add(current_node)
             current_node.generate_possible_states()
             for child in current_node.children:
                 if child.matrix.is_solved():
                     solution_found = True
                     final_node = child
                 else:
-                    condition1: bool = child.matrix.elements not in [node.matrix.elements for node in execution_queue]
-                    condition2: bool = child.matrix.elements not in [node.matrix.elements for node in nodes_added]
-                    if condition1 and condition2:
+                    if child.matrix.elements not in [node.matrix.elements for node in nodes_added]:
                         heapq.heappush(execution_queue, child)
-                        nodes_added.append(child)
-                        execution_queue.append(child)
 
         solution_path: List[TreeNode] = self.decision_tree.find_path_to_root(final_node)
         self.show_solution_steps(solution_path)
