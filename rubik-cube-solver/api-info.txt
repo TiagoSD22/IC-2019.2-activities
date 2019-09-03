@@ -1,0 +1,36 @@
+topo: 0 -> a b c d e f g h i
+Face de frente para você:
+c f i
+b e h
+a d g
+
+base: 1 -> a b c d e f g h i
+Face de frente para você:
+c f i
+b e h
+a d g
+
+esquerda: 2 -> a b c d e f g h i
+Face de frente para você:
+c f i
+b e h
+a d g
+
+direita: 3 -> a b c d e f g h i
+Face de frente para você:
+c f i
+b e h
+a d g
+
+trás: 4 -> a b c d e f g h i
+Face de frente para você:
+c f i
+b e h
+a d g
+
+frente: 5 -> a b c d e f g h i
+Face de frente para você:
+c f i
+b e h
+a d g
+
