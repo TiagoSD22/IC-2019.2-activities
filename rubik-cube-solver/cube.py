@@ -55,16 +55,49 @@ class Cube:
         self.__rotate_bottom_clockwise_or_top_counterclockwise("BOTTOM")
 
     def rotate_front_clockwise(self):
-        change_index: int = self.order - 1
         self.front.rotate_clockwise()
+        self.__rotate_front_clockwise_or_back_counterclockwise("FRONT")
+
+    def rotate_front_counterclockwise(self):
+        self.front.rotate_counterclockwise()
+        self.__rotate_back_clockwise_or_front_counterclockwise("FRONT")
+
+    def rotate_back_clockwise(self):
+        self.back.rotate_clockwise()
+        self.__rotate_back_clockwise_or_front_counterclockwise("BACK")
+
+    def rotate_back_counterclockwise(self):
+        self.back.rotate_counterclockwise()
+        self.__rotate_front_clockwise_or_back_counterclockwise("BACK")
+
+    def __rotate_front_clockwise_or_back_counterclockwise(self, face: str):
+        if face == "FRONT":
+            change_index: int = self.order - 1
+        else:
+            change_index: int = 0
+
         aux1: array = copy.deepcopy(self.top.elements[change_index])
         # precisamos inverter a coluna ao reposicioná-la como linha no topo
         self.top.elements[change_index] = flip(copy.deepcopy(self.left.elements[:, change_index]))
         aux2: array = copy.deepcopy(self.right.elements[:, self.order - 1 - change_index])
         self.right.elements[:, self.order - 1 - change_index] = copy.deepcopy(aux1)
-        aux1 = copy.deepcopy(self.bottom.elements[change_index])
-        self.bottom.elements[change_index] = copy.deepcopy(aux2)
-        self.left.elements[:, change_index] = flip(copy.deepcopy(aux1))
+        aux1 = copy.deepcopy(self.bottom.elements[self.order - 1 - change_index])
+        self.bottom.elements[self.order - 1 - change_index] = flip(copy.deepcopy(aux2))
+        self.left.elements[:, change_index] = copy.deepcopy(aux1)
+
+    def __rotate_back_clockwise_or_front_counterclockwise(self, face: str):
+        if face == "FRONT":
+            change_index: int = self.order - 1
+        else:
+            change_index: int = 0
+
+        aux1: array = copy.deepcopy(self.top.elements[change_index])
+        self.top.elements[change_index] = copy.deepcopy(self.right.elements[:, self.order - 1 - change_index])
+        aux2: array = copy.deepcopy(self.left.elements[:, change_index])
+        self.left.elements[:, change_index] = copy.deepcopy(flip(aux1))
+        aux1 = copy.deepcopy(self.bottom.elements[self.order - 1 - change_index])
+        self.bottom.elements[self.order - 1 - change_index] = copy.deepcopy(aux2)
+        self.right.elements[:, self.order - 1 - change_index] = copy.deepcopy(flip(aux1))
 
     def __rotate_right_clockwise_or_left_counterclockwise(self, face: str):
         if face == "RIGHT":
