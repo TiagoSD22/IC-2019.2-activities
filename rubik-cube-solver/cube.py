@@ -3,7 +3,7 @@ from face import Face
 from numpy import flip
 from numpy import array
 from typing import Dict, List
-from colorsEnum import ColorsEnum
+from colors_enum import ColorsEnum
 
 
 class Cube:
@@ -169,3 +169,15 @@ class Cube:
             index += 1
         res += "\nCubo montado: {}".format(self.is_solved())
         return res
+
+    def estimate_distance_from_solution(self) -> int:
+        distance: int = 0
+        for face in [self.front, self.back, self.top, self.bottom, self.right, self.left]:
+            distance += face.get_total_wrong_pieces()
+
+        return distance
+
+    def get_faces(self) -> Dict[str, Face]:
+        return {"FRONT": self.front, "BACK": self.back,
+                "TOP": self.top, "BOTTOM": self.bottom,
+                "RIGHT": self.right, "LEFT": self.left}

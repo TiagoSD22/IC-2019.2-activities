@@ -229,6 +229,8 @@ class SlidePuzzleSolver:
 
         while not solution_found:
             current_node = heapq.heappop(execution_queue)
+            print("\nEstado escolhido:\n{}\nDistancia: {}".format(current_node.matrix,
+                                                                  current_node.distance_from_solution))
             nodes_added.add(current_node)
             current_node.generate_possible_states()
             for child in current_node.children:

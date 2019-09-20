@@ -16,6 +16,15 @@ class Face:
                     return False
         return True
 
+    def get_total_wrong_pieces(self):
+        wrong_pieces: int = 0
+        for row in self.elements:
+            for col in row:
+                if col != self.color:
+                    wrong_pieces += 1
+
+        return wrong_pieces
+
     def rotate_clockwise(self):
         self.elements = np.rot90(self.elements, k=-1)
 

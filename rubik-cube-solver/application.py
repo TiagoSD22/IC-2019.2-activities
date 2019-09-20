@@ -1,4 +1,8 @@
+import random
 import numpy as np
+from rubik_cube_solver import RubikCubeSolver
+from state_tree import StateTree
+from tree_node import TreeNode
 from cube import Cube
 from face import Face
 import matplotlib.pyplot as plt
@@ -30,33 +34,34 @@ def adapt_cube_for_interactive(cube: Cube) -> List[List]:
     return faces_array
 
 
+def scramble_cube(cube: Cube, minimum_movements: int = 50, maximum_movements: int = 100):
+    rotations: List[str] = ["rotate_right", "rotate_left", "rotate_top", "rotate_bottom", "rotate_front",
+                            "rotate_back"]
+    orientations: List[str] = ["clockwise", "counterclockwise"]
+
+    n_movements: int = random.randrange(minimum_movements, maximum_movements + 1, 1)
+
+    for i in range(n_movements):
+        rotation = random.choice(rotations)
+        orientation = random.choice(orientations)
+
+        rotation_function = getattr(cube, rotation + "_" + orientation)
+        rotation_function()
+
+
 if __name__ == "__main__":
     order: int = 3
     cube: Cube = generate_cube(order)
 
-    cube.rotate_right_clockwise()  # shift + r
-    cube.rotate_top_clockwise()  # shift + u
-    cube.rotate_bottom_clockwise() # shift + d
-    cube.rotate_top_clockwise()  # shift + u
-    cube.rotate_left_clockwise()  # shift + l
-    cube.rotate_top_counterclockwise()  # u
-    cube.rotate_bottom_counterclockwise()  # d
-    cube.rotate_right_counterclockwise()  # r
-    cube.rotate_left_counterclockwise()  # l
-    cube.rotate_bottom_clockwise()  # shift + d
-    cube.rotate_top_clockwise()  # shift + u
-    cube.rotate_right_clockwise()  # shift + r
-    cube.rotate_left_counterclockwise()  # l
-    cube.rotate_top_counterclockwise()  # u
-    cube.rotate_bottom_counterclockwise()  # d
-    cube.rotate_right_clockwise()  # shift + r
-    cube.rotate_top_clockwise()  # shift + u
-    cube.rotate_bottom_counterclockwise()  # d
-    cube.rotate_left_counterclockwise()  # l
-    cube.rotate_front_clockwise()  # shift + f
-    cube.rotate_top_counterclockwise()  # u
+    scramble_cube(cube, 100, 400)
 
-    faces_array: List[List] = adapt_cube_for_interactive(cube)
-    cube_inter: CubeInteractive = CubeInteractive(N=order, faces_array=faces_array)
+    root: TreeNode = TreeNode(cube, 0)
+    tree: StateTree = StateTree(root)
+
+    solver: RubikCubeSolver = RubikCubeSolver(tree)
+
+    solver.solve()
+
+    cube_inter: CubeInteractive = CubeInteractive(N=order, faces_array=adapt_cube_for_interactive(cube))
     cube_inter.draw_interactive()
     plt.show()
