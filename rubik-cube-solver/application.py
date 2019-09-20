@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     solver: RubikCubeSolver = RubikCubeSolver(tree)
 
-    solver.solve()
+    #solver.solve()  # busca com heuristica nao esta funcionando
 
     cube_inter: CubeInteractive = CubeInteractive(N=order, faces_array=adapt_cube_for_interactive(cube))
     cube_inter.draw_interactive()

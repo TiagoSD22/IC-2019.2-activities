@@ -200,9 +200,10 @@ class Cube:
                                                 M.T)
 
     def draw_interactive(self):
+        plt.rcParams['toolbar'] = 'None'
         fig = plt.figure(figsize=(8, 6))
         fig.add_axes(InteractiveCube(self))
-        fig.canvas.toolbar.pack_forget()
+        #fig.canvas.toolbar.pack_forget()
         return fig
 
 
