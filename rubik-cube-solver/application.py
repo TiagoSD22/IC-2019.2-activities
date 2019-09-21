@@ -1,8 +1,6 @@
 import random
 import numpy as np
-from rubik_cube_solver import RubikCubeSolver
-from state_tree import StateTree
-from tree_node import TreeNode
+from genetic_algorithm import GeneticAlgorithm
 from cube import Cube
 from face import Face
 import matplotlib.pyplot as plt
@@ -55,13 +53,16 @@ if __name__ == "__main__":
 
     scramble_cube(cube, 200, 1000)
 
-    root: TreeNode = TreeNode(cube, 0)
-    tree: StateTree = StateTree(root)
+    print("Distancia inicial: ", cube.estimate_distance_from_solution())
 
-    solver: RubikCubeSolver = RubikCubeSolver(tree)
+    ga: GeneticAlgorithm = GeneticAlgorithm(cube, 100, 20, 0.01, 50000)
 
-    #solver.solve()  # busca com heuristica nao esta funcionando
+    ind = ga.run_natural_selection()
 
-    cube_inter: CubeInteractive = CubeInteractive(N=order, faces_array=adapt_cube_for_interactive(cube))
+    print("Distancia final: ", ind.cube.estimate_distance_from_solution())
+
+    print("Cromossomo: ", [[gene.face_to_rotate, gene.orientation] for gene in ind.chromosome])
+
+    cube_inter: CubeInteractive = CubeInteractive(N=order, faces_array=adapt_cube_for_interactive(ind.cube))
     cube_inter.draw_interactive()
     plt.show()
