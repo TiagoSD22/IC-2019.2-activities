@@ -53,7 +53,7 @@ if __name__ == "__main__":
     order: int = 3
     cube: Cube = generate_cube(order)
 
-    scramble_cube(cube, 100, 400)
+    scramble_cube(cube, 200, 1000)
 
     root: TreeNode = TreeNode(cube, 0)
     tree: StateTree = StateTree(root)
