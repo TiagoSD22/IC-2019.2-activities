@@ -71,10 +71,7 @@ class Cube:
         self.__rotate_front_clockwise_or_back_counterclockwise("BACK")
 
     def __rotate_front_clockwise_or_back_counterclockwise(self, face: str):
-        if face == "FRONT":
-            change_index: int = self.order - 1
-        else:
-            change_index: int = 0
+        change_index: int = self.order - 1 if face == "FRONT" else 0
 
         aux1: array = copy.deepcopy(self.top.elements[change_index])
         # precisamos inverter a coluna ao reposicioná-la como linha no topo
@@ -86,10 +83,7 @@ class Cube:
         self.left.elements[:, change_index] = copy.deepcopy(aux1)
 
     def __rotate_back_clockwise_or_front_counterclockwise(self, face: str):
-        if face == "FRONT":
-            change_index: int = self.order - 1
-        else:
-            change_index: int = 0
+        change_index: int = self.order - 1 if face == "FRONT" else 0
 
         aux1: array = copy.deepcopy(self.top.elements[change_index])
         self.top.elements[change_index] = copy.deepcopy(self.right.elements[:, self.order - 1 - change_index])
@@ -100,10 +94,7 @@ class Cube:
         self.right.elements[:, self.order - 1 - change_index] = copy.deepcopy(flip(aux1))
 
     def __rotate_right_clockwise_or_left_counterclockwise(self, face: str):
-        if face == "RIGHT":
-            column_index: int = self.order - 1
-        else:
-            column_index: int = 0
+        column_index: int = self.order - 1 if face == "RIGHT" else 0
 
         aux1: array = copy.deepcopy(self.top.elements[:, column_index])
         self.top.elements[:, column_index] = copy.deepcopy(self.front.elements[:, column_index])
@@ -116,10 +107,7 @@ class Cube:
         self.front.elements[:, column_index] = copy.deepcopy(aux1)
 
     def __rotate_left_clockwise_or_right_counterclockwise(self, face: str):
-        if face == "RIGHT":
-            column_index: int = self.order - 1
-        else:
-            column_index: int = 0
+        column_index: int = self.order - 1 if face == "RIGHT" else 0
 
         aux1: array = copy.deepcopy(self.front.elements[:, column_index])
         self.front.elements[:, column_index] = copy.deepcopy(self.top.elements[:, column_index])
@@ -132,10 +120,7 @@ class Cube:
         self.top.elements[:, column_index] = copy.deepcopy(flip(aux1))
 
     def __rotate_top_clockwise_or_bottom_counterclockwise(self, face: str):
-        if face == "TOP":
-            column_index: int = 0
-        else:
-            column_index: int = self.order - 1
+        column_index: int = 0 if face == "TOP" else self.order - 1
 
         aux1: array = copy.deepcopy(self.left.elements[column_index])
         self.left.elements[column_index] = copy.deepcopy(self.front.elements[column_index])
@@ -146,10 +131,7 @@ class Cube:
         self.front.elements[column_index] = copy.deepcopy(aux1)
 
     def __rotate_bottom_clockwise_or_top_counterclockwise(self, face: str):
-        if face == "TOP":
-            column_index: int = 0
-        else:
-            column_index: int = self.order - 1
+        column_index: int = 0 if face == "TOP" else self.order - 1
 
         aux1: array = copy.deepcopy(self.front.elements[column_index])
         self.front.elements[column_index] = copy.deepcopy(self.left.elements[column_index])
