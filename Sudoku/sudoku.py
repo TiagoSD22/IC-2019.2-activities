@@ -34,7 +34,7 @@ class Sudoku:
                                                  if occurrence == 1])
         return occurrences
 
-    def calculate_fitness(self):
+    def calculate_fitness(self) -> float:
         total_rows_unique_occurrences: int = 0
         total_columns_unique_occurrences: int = 0
         total_sub_boards_unique_occurrencs: int = 0
