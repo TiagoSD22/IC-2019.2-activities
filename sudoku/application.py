@@ -14,6 +14,10 @@ def make_mock() -> List[array]:  # funcao para gerar um sudoku mockado para test
 
 def run(mock):
 
+    # tabuleiro mockado para testes
+    #mock = make_mock()
+    #sudoku: Sudoku = Sudoku(mock[1])
+
     sudoku: Sudoku = Sudoku(mock)
 
     print("Caso: {}\n{}".format(mock[0], sudoku))
