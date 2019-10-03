@@ -148,13 +148,13 @@ class SimulatedAnnealingSudokuSolver:
                 stale_points += 1
 
             if stale_points > self.stale_limit:
-                res = self.apply_heuristic(current_state, current_score)
-                if res is not None:
-                    current_state, current_score = res
-                else:  # recomecar
-                    temperature = 500000000
-                    current_state = self.__generate_first_state()
-                    current_score = current_state.get_score()
+                #res = self.apply_heuristic(current_state, current_score)
+                #if res is not None:
+                #    current_state, current_score = res
+                #else:  # recomecar
+                temperature = 500000000
+                current_state = self.__generate_first_state()
+                current_score = current_state.get_score()
                 stale_points = 0
 
             temperature *= 0.6
