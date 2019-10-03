@@ -1,6 +1,6 @@
 import operator
 from functools import reduce
-from typing import List
+from typing import List, Dict
 from numpy import array
 import numpy as np
 
@@ -8,6 +8,8 @@ import numpy as np
 class Sudoku:
     def __init__(self, boards: List[array]):
         self.boards: List[array] = boards
+        self.rows_quality_dict: Dict[int, int] = dict()
+        self.columns_quality_dict: Dict[int, int] = dict()
 
     def __str__(self):
         res: str = "-" * 86 + "\n"
@@ -28,23 +30,6 @@ class Sudoku:
                 res += "-" * 86 + "\n"
 
         return res
-
-    def get_sub_board_score(self, sub_board_index: int) -> int:
-        board_list: List = [
-            element for row in self.boards[sub_board_index] for element in row
-        ]
-        occurrences: int = reduce(
-            operator.add,
-            [
-                occurrence
-                for [value, occurrence] in [
-                    [n, board_list.count(n)] for n in board_list if n != 0
-                ]
-                if occurrence == 1
-            ],
-            0,
-        )
-        return occurrences
 
     def get_row(self, row_index):
         sub_board = 3 * (row_index // 3)
@@ -85,6 +70,8 @@ class Sudoku:
             ],
             0,
         )
+        self.rows_quality_dict[row_index] = row_score
+        print("Pontuacao da linha {}: {}".format(row_index, row_score))
         return row_score
 
     def get_column_score(self, column_index: int) -> int:
@@ -101,22 +88,21 @@ class Sudoku:
             ],
             0,
         )
+        self.columns_quality_dict[column_index] = column_score
+        print("Pontuacao da coluna {}: {}".format(column_index, column_score))
         return column_score
 
     def calculate_fitness(self) -> float:
         total_rows_unique_occurrences: int = 0
         total_columns_unique_occurrences: int = 0
-        total_sub_boards_unique_occurrences: int = 0
 
         for index in range(9):
             total_columns_unique_occurrences += self.get_column_score(index)
             total_rows_unique_occurrences += self.get_row_score(index)
-            total_sub_boards_unique_occurrences += self.get_sub_board_score(index)
 
         rows_score: float = total_rows_unique_occurrences / 9
         columns_score: float = total_columns_unique_occurrences / 9
-        sub_boards_score: float = total_sub_boards_unique_occurrences / 9
 
-        fitness: float = (rows_score + columns_score + sub_boards_score) / 27
+        fitness: float = (rows_score + columns_score) / 18
 
         return fitness

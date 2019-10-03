@@ -46,4 +46,62 @@ mock_hard1: List = [
     sub_board8,
     sub_board9,
 ]
-mock_list.append(("hard 1", mock_hard1))
+
+#mock_list.append(("hard 1", mock_hard1))
+
+sub_board1 = array([
+        [0, 7, 0],
+        [0, 3, 9],
+        [2, 8, 4],
+      ])
+
+sub_board2 = array([
+        [3, 0, 9],
+        [8, 0, 0],
+        [0, 0, 0],
+      ])
+
+sub_board3 = array([
+        [5, 0, 0],
+        [1, 0, 7],
+        [0, 0, 0],
+      ])
+
+sub_board4 = array([
+        [0, 0, 0],
+        [0, 0, 3],
+        [8, 6, 0],
+      ])
+
+sub_board5 = array([
+        [0, 0, 0],
+        [1, 5, 4],
+        [0, 0, 0],
+      ])
+
+sub_board6 = array([
+        [7, 3, 1],
+        [0, 0, 0],
+        [0, 5, 0],
+      ])
+
+sub_board7 = array([
+        [0, 0, 5],
+        [9, 2, 7],
+        [0, 1, 0],
+      ])
+
+sub_board8 = array([
+        [0, 0, 0],
+        [0, 0, 0],
+        [5, 6, 2],
+      ])
+
+sub_board9 = array([
+        [0, 2, 3],
+        [0, 0, 0],
+        [0, 0, 9],
+      ])
+
+mock_teste1 = [sub_board1, sub_board2, sub_board3, sub_board4, sub_board5, sub_board6, sub_board7, sub_board8, sub_board9]
+mock_list.append(("teste 1", mock_teste1))
