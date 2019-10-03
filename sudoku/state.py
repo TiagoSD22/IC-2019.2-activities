@@ -2,11 +2,13 @@ import copy
 import random
 from typing import List, Dict, Tuple
 from sudoku import Sudoku
+import logging
 
 
 class State:
-    def __init__(self, sudoku_problem: Sudoku):
+    def __init__(self, sudoku_problem: Sudoku, logger: logging):
         self.sudoku_problem = sudoku_problem
+        self.logger = logger
 
     def disturb(self, fixed_positions_dict: Dict[int, List[int]]):
         sub_board_index: int = random.choice([index for index in range(9)])
@@ -22,10 +24,8 @@ class State:
             chosen_board[block2_position // 3, block2_position % 3],
             chosen_board[block1_position // 3, block1_position % 3],
         )
-        print(
-            "Submatriz escolihda: {}\nCelulas escolhidas: {}, {}".format(
-                sub_board_index, block1_position, block2_position
-            )
+        self.logger.debug(
+            f"Submatriz escolihda: {sub_board_index}\nCelulas escolhidas: {block1_position}, {block2_position}"
         )
 
     def perform_local_search(
@@ -33,30 +33,51 @@ class State:
         collection_searching: str,
         search_index: Tuple[int, int],
         best_score: float,
+        fixed_positions_dict: Dict[int, List[int]],
     ) -> Tuple[Sudoku, float]:
         if collection_searching == "row":
             row1_index, row2_index = search_index
             for column_index in range(9):
-                copy_sudoku: Sudoku = copy.deepcopy(self.sudoku_problem)
                 sub_board_index: int = 3 * (row1_index // 3) + column_index // 3
-                board = copy_sudoku.boards[sub_board_index]
-                col = column_index % 3
-                board[row1_index, col], board[row2_index, col] = board[row2_index, col], board[row1_index, col]
-                new_score: float = copy_sudoku.calculate_fitness()
-                if new_score > best_score:
-                    return copy_sudoku, new_score
+                sub_board_fixed_positions: List[int] = fixed_positions_dict[
+                    sub_board_index
+                ]
+                if (
+                    3 * row1_index + column_index not in sub_board_fixed_positions
+                    and 3 * row2_index + column_index not in sub_board_fixed_positions
+                ):
+                    copy_sudoku: Sudoku = copy.deepcopy(self.sudoku_problem)
+                    board = copy_sudoku.boards[sub_board_index]
+                    col = column_index % 3
+                    board[row1_index, col], board[row2_index, col] = (
+                        board[row2_index, col],
+                        board[row1_index, col],
+                    )
+                    new_score: float = copy_sudoku.calculate_fitness()
+                    if new_score > best_score:
+                        return copy_sudoku, new_score
 
         elif collection_searching == "column":
             column1_index, column2_index = search_index
             for row_index in range(9):
-                copy_sudoku: Sudoku = copy.deepcopy(self.sudoku_problem)
                 sub_board_index: int = 3 * (column1_index // 3) + row_index // 3
-                board = copy_sudoku.boards[sub_board_index]
-                row = row_index % 3
-                board[row, column1_index], board[row, column2_index] = board[row, column2_index], board[row, column1_index]
-                new_score: float = copy_sudoku.calculate_fitness()
-                if new_score > best_score:
-                    return copy_sudoku, new_score
+                sub_board_fixed_positions: List[int] = fixed_positions_dict[
+                    sub_board_index
+                ]
+                if (
+                    3 * row_index + column1_index not in sub_board_fixed_positions
+                    and 3 * row_index + column2_index not in sub_board_fixed_positions
+                ):
+                    copy_sudoku: Sudoku = copy.deepcopy(self.sudoku_problem)
+                    board = copy_sudoku.boards[sub_board_index]
+                    row = row_index % 3
+                    board[row, column1_index], board[row, column2_index] = (
+                        board[row, column2_index],
+                        board[row, column1_index],
+                    )
+                    new_score: float = copy_sudoku.calculate_fitness()
+                    if new_score > best_score:
+                        return copy_sudoku, new_score
 
         return None
 

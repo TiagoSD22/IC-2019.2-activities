@@ -3,13 +3,15 @@ from functools import reduce
 from typing import List, Dict
 from numpy import array
 import numpy as np
+import logging
 
 
 class Sudoku:
-    def __init__(self, boards: List[array]):
+    def __init__(self, boards: List[array], logger: logging):
         self.boards: List[array] = boards
         self.rows_quality_dict: Dict[int, int] = dict()
         self.columns_quality_dict: Dict[int, int] = dict()
+        self.logger: logging = logger
 
     def __str__(self):
         res: str = "-" * 86 + "\n"
@@ -71,7 +73,7 @@ class Sudoku:
             0,
         )
         self.rows_quality_dict[row_index] = row_score
-        print("Pontuacao da linha {}: {}".format(row_index, row_score))
+        self.logger.debug(f"Pontuacao da linha {row_index}: {row_score}")
         return row_score
 
     def get_column_score(self, column_index: int) -> int:
@@ -89,7 +91,7 @@ class Sudoku:
             0,
         )
         self.columns_quality_dict[column_index] = column_score
-        print("Pontuacao da coluna {}: {}".format(column_index, column_score))
+        self.logger.debug(f"Pontuacao da coluna {column_index}: {column_score}")
         return column_score
 
     def calculate_fitness(self) -> float:
