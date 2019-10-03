@@ -17,9 +17,9 @@ def run(mock):
     sudoku: Sudoku = Sudoku(mock)
 
     print("Caso: {}\n{}".format(mock[0], sudoku))
-    print("Fitness: ", sudoku.calculate_fitness())
+    #print("Fitness: ", sudoku.calculate_fitness())
 
-    sa: SimulatedAnnealingSudokuSolver = SimulatedAnnealingSudokuSolver(sudoku)
+    sa: SimulatedAnnealingSudokuSolver = SimulatedAnnealingSudokuSolver(sudoku, 500)
     start = time.time()
     final_state, score = sa.solve()
     final = time.time()
