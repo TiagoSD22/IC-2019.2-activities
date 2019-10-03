@@ -12,11 +12,9 @@ def make_mock() -> List[array]:  # funcao para gerar um sudoku mockado para test
     return mock
 
 
-def main():
-    # tabuleiro mockado para testes
-    mock = make_mock()
+def run(mock):
 
-    sudoku: Sudoku = Sudoku(mock[1])
+    sudoku: Sudoku = Sudoku(mock)
 
     print("Caso: {}\n{}".format(mock[0], sudoku))
     print("Fitness: ", sudoku.calculate_fitness())
@@ -26,7 +24,3 @@ def main():
     final_state, score = sa.solve()
     final = time.time()
     print("Ultimo estado encontrado:\n{}\nPontuacao: {}\nTempo: {}s.".format(final_state, score, (final - start)))
-
-
-if __name__ == "__main__":
-    main()
