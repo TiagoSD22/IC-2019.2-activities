@@ -5,13 +5,11 @@
 import random
 from typing import List, Dict
 from sudoku import Sudoku
-import logging
 
 
 class State:
-    def __init__(self, sudoku_problem: Sudoku, logger: logging):
+    def __init__(self, sudoku_problem: Sudoku):
         self.sudoku_problem = sudoku_problem
-        self.logger = logger
 
     def disturb(self, fixed_positions_dict: Dict[int, List[int]]):
         """ Causa uma modficacao no estado atual trocando, aleatoriamente, duas celulas de lugar
@@ -31,9 +29,6 @@ class State:
         ] = (
             chosen_board[block2_position // 3, block2_position % 3],
             chosen_board[block1_position // 3, block1_position % 3],
-        )
-        self.logger.debug(
-            f"Submatriz escolihda: {sub_board_index}\nCelulas escolhidas: {block1_position}, {block2_position}"
         )
 
     def get_score(self) -> float:

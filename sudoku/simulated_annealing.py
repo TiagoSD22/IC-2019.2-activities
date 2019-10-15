@@ -12,17 +12,15 @@ from math import exp
 from typing import Dict, List, Tuple
 from state import State
 from sudoku import Sudoku
-import logging
 
 
 class SimulatedAnnealingSudokuSolver:
     def __init__(
-        self, initial_sudoku_problem: Sudoku, logger: logging, stale_limit: int = 500
+        self, initial_sudoku_problem: Sudoku, stale_limit: int = 500
     ):
         self.initial_sudoku_problem = initial_sudoku_problem
         self.fixed_positions_dict = self.__find_fixed_positions()
         self.stale_limit = stale_limit
-        self.logger = logger
 
     def __find_fixed_positions(self) -> Dict[int, List[int]]:
         """ Encontra as celulas fornecidas inicialmente no Sudoku e as armazena em um dicionario em que a chave
@@ -76,7 +74,7 @@ class SimulatedAnnealingSudokuSolver:
                     )
                     filling_sudoku.boards[sub_board][row % 3, column % 3] = new_value
 
-        first_state: State = State(filling_sudoku, self.logger)
+        first_state: State = State(filling_sudoku)
         return first_state
 
     def solve(self) -> Tuple[State, float]:
@@ -98,18 +96,12 @@ class SimulatedAnnealingSudokuSolver:
         initial_temperature = 50000
         temperature = initial_temperature
         stale_points = 0
-        self.logger.debug(
-            f"Estado inicial:\n{current_state}\nPontuacao: {current_score}"
-        )
+      
         print("\n\nResolvendo...\n\n")
         while temperature > 0 and current_score != 1:
-            possible_best_state: State = State(
-                copy.deepcopy(current_state.sudoku_problem), self.logger
-            )
+            possible_best_state: State = State(copy.deepcopy(current_state.sudoku_problem))
             possible_best_state.disturb(self.fixed_positions_dict)
-            self.logger.debug(f"\n\nEstado gerado:\n{possible_best_state}")
             possible_best_score = possible_best_state.get_score()
-            self.logger.debug(f"Pontuacao: {possible_best_score}")
             delta_score = possible_best_score - current_score
             accept_new_state: bool = False
 
@@ -119,15 +111,12 @@ class SimulatedAnnealingSudokuSolver:
             elif exp(delta_score / temperature) > random.random():
                 accept_new_state = True
             if accept_new_state:
-                self.logger.debug("Estado aceito")
                 current_score = possible_best_score
                 current_state = possible_best_state
             else:
-                self.logger.debug("Estado NAO aceito")
                 stale_points += 1
 
             if stale_points > self.stale_limit:
-                self.logger.debug("Estagnou, recomecando")
                 temperature = initial_temperature
                 current_state = self.__generate_first_state()
                 current_score = current_state.get_score()
