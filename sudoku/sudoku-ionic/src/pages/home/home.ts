@@ -92,7 +92,7 @@ export class HomePage {
 
     loading.present()
     .then(() => this.sudokuProvider.getSudoku())
-    .then(resp=> this.sudoku =  resp['sudokuSelected'])
+    .then(resp=> {this.sudoku =  resp['sudokuSelected']; this.initialSudoku = resp['sudokuSelected']})
     .then(()=>{
       this.isReady = true
       

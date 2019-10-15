@@ -1,7 +1,7 @@
-const defaultEnvironment = 'test'
+const defaultEnvironment = 'production'
 const environment = {
   production: {
-    apiUrl: 'https://sudokuic.herokuapp.com',
+    apiUrl: 'https://sa-sudoku-solver.herokuapp.com',
   },
   test: {
     apiUrl: 'http://localhost:5000',
