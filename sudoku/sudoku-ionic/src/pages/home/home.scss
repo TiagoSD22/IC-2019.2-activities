@@ -1,0 +1,43 @@
+page-home {
+
+    table{
+        font-size: 12px;
+    }
+    
+    .tutorial{
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    #initial-value{
+      background-color: rgb(196, 194, 197);
+    }
+
+    .nonzero{
+      background-color: rgb(196, 194, 197);
+      
+
+    }
+
+    table {
+        margin:1em auto;
+      }
+      td {
+        height:30px;
+        width:30px;
+        border:1px solid;
+        text-align:center;
+      }
+      td:first-child {
+        border-left:3px solid;
+      }
+      td:nth-child(3n) {
+        border-right:3px solid ;
+      }
+      tr:first-child {
+        border-top:3px solid;
+      }
+      tr:nth-child(3n) td {
+        border-bottom: 3px solid ;
+      }
+}

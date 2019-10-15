@@ -1,0 +1,604 @@
+<ion-header >
+  <ion-toolbar >
+    <ion-title>
+      Sudoku
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-padding">
+    <div padding style="text-align: center">
+        <button ion-button  full round *ngIf="!isReady"  (click)="getRandomSudoku()" color="primary">Carregar Sudoku</button>
+    </div>
+
+    <div class="sudoku-container">
+        <ion-card  *ngIf="sudoku">
+            <ion-card-header *ngIf="isReady">
+              Dificuldade: 
+              <ion-chip  color="primary" style="float: right; margin-top: -6px;">
+                <ion-label color="white" >Intermediário</ion-label>
+              </ion-chip>
+            </ion-card-header>
+            <ion-card-content>
+                <table border="0.5" >
+
+                    <tr>
+                        <td>
+                          <ion-input type="number" 
+                          [disabled]="sudoku[0][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[0][0][0]!=null }"
+                          value="{{sudoku[0][0][0]}}"
+                          ></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number" 
+                          [disabled]="sudoku[0][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[0][0][1]!=null }"
+                          value="{{sudoku[0][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[0][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[0][0][2]!=null }"
+                          value="{{sudoku[0][0][2]}}"></ion-input>
+                        </td>
+                  
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[1][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[1][0][0]!=null }"
+                          value="{{sudoku[1][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[1][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[1][0][1]!=null }"
+                          value="{{sudoku[1][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[1][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[1][0][2]!=null }"
+                          value="{{sudoku[1][0][2]}}"></ion-input>
+                        </td>
+
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[2][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[2][0][0]!=null }"
+                          value="{{sudoku[2][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[2][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[2][0][1]!=null }"
+                          value="{{sudoku[2][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[2][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[2][0][2]!=null }"
+                          value="{{sudoku[2][0][2]}}"></ion-input>
+                        </td>
+
+                    </tr>
+                    
+                    <tr>
+
+                        <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[0][1][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[0][1][0]!=null }"
+                            value="{{sudoku[0][1][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[0][1][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[0][1][1]!=null }"
+                            value="{{sudoku[0][1][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[0][1][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[0][1][2]!=null }"
+                            value="{{sudoku[0][1][2]}}"></ion-input>
+                          </td>
+                    
+        
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[1][1][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[1][1][0]!=null }"
+                            value="{{sudoku[1][1][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[1][1][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[1][1][1]!=null }"
+                            value="{{sudoku[1][1][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[1][1][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[1][1][2]!=null }"
+                            value="{{sudoku[1][1][2]}}"></ion-input>
+                          </td>
+        
+        
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[2][1][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[2][1][0]!=null }"
+                            value="{{sudoku[2][1][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[2][1][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[2][1][1]!=null }"
+                            value="{{sudoku[2][1][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[2][1][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[2][1][2]!=null }"
+                            value="{{sudoku[2][1][2]}}"></ion-input>
+                          </td>
+
+                      </tr>
+                      
+                      <tr>
+
+                          <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[0][2][0]!=null"
+                              [ngClass]="{'nonzero': sudoku[0][2][0]!=null }"
+                              value="{{sudoku[0][2][0]}}"></ion-input>
+                            </td>
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[0][2][1]!=null"
+                              [ngClass]="{'nonzero': sudoku[0][2][1]!=null }"
+                              value="{{sudoku[0][2][1]}}"></ion-input>
+                            </td>
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[0][2][2]!=null"
+                              [ngClass]="{'nonzero': sudoku[0][2][2]!=null }"
+                              value="{{sudoku[0][2][2]}}"></ion-input>
+                            </td>
+                      
+          
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[1][2][0]!=null"
+                              [ngClass]="{'nonzero': sudoku[1][2][0]!=null }"
+                              value="{{sudoku[1][2][0]}}"></ion-input>
+                            </td>
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[1][2][1]!=null"
+                              [ngClass]="{'nonzero': sudoku[1][2][1]!=null }"
+                              value="{{sudoku[1][2][1]}}"></ion-input>
+                            </td>
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[1][2][2]!=null"
+                              [ngClass]="{'nonzero': sudoku[1][2][2]!=null }"
+                              value="{{sudoku[1][2][2]}}"></ion-input>
+                            </td>
+          
+          
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[2][2][0]!=null"
+                              [ngClass]="{'nonzero': sudoku[2][2][0]!=null }"
+                              value="{{sudoku[2][2][0]}}"></ion-input>
+                            </td>
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[2][2][1]!=null"
+                              [ngClass]="{'nonzero': sudoku[2][2][1]!=null }"
+                              value="{{sudoku[2][2][1]}}"></ion-input>
+                            </td>
+                            <td>
+                              <ion-input type="number"
+                              [disabled]="sudoku[2][2][2]!=null"
+                              [ngClass]="{'nonzero': sudoku[2][2][2]!=null }"
+                              value="{{sudoku[2][2][2]}}"></ion-input>
+                            </td>
+                    </tr>  
+
+
+                    <tr>
+
+                        <td>
+                          <ion-input type="number"
+                            [disabled]="sudoku[3][0][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[3][0][0]!=null }"
+                          value="{{sudoku[3][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                            [disabled]="sudoku[3][0][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[3][0][1]!=null }"
+                          value="{{sudoku[3][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[3][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[3][0][2]!=null }"
+                          value="{{sudoku[3][0][2]}}"></ion-input>
+                        </td>
+                  
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[4][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[4][0][0]!=null }"
+                          value="{{sudoku[4][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[4][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[4][0][1]!=null }"
+                          value="{{sudoku[4][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[4][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[4][0][2]!=null }"
+                          value="{{sudoku[4][0][2]}}"></ion-input>
+                        </td>
+
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[5][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[5][0][0]!=null }"
+                          value="{{sudoku[5][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[5][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[5][0][1]!=null }"
+                          value="{{sudoku[5][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[5][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[5][0][2]!=null }"
+                          value="{{sudoku[5][0][2]}}"></ion-input>
+                        </td>
+
+                    </tr>
+                    
+                    <tr>
+
+                    <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[3][1][0]!=null"
+                        [ngClass]="{'nonzero': sudoku[3][1][0]!=null }"
+                        value="{{sudoku[3][1][0]}}"></ion-input>
+                      </td>
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[3][1][1]!=null"
+                        [ngClass]="{'nonzero': sudoku[3][1][1]!=null }"
+                        value="{{sudoku[3][1][1]}}"></ion-input>
+                      </td>
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[3][1][2]!=null"
+                        [ngClass]="{'nonzero': sudoku[3][1][2]!=null }"
+                        value="{{sudoku[3][1][2]}}"></ion-input>
+                      </td>
+                
+
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[4][1][0]!=null"
+                        [ngClass]="{'nonzero': sudoku[4][1][0]!=null }"
+                        value="{{sudoku[4][1][0]}}"></ion-input>
+                      </td>
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[4][1][1]!=null"
+                        [ngClass]="{'nonzero': sudoku[4][1][1]!=null }"
+                        value="{{sudoku[4][1][1]}}"></ion-input>
+                      </td>
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[4][1][2]!=null"
+                        [ngClass]="{'nonzero': sudoku[4][1][2]!=null }"
+                        value="{{sudoku[4][1][2]}}"></ion-input>
+                      </td>
+
+
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[5][1][0]!=null"
+                        [ngClass]="{'nonzero': sudoku[5][1][0]!=null }"
+                        value="{{sudoku[5][1][0]}}"></ion-input>
+                      </td>
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[5][1][1]!=null"
+                        [ngClass]="{'nonzero': sudoku[5][1][1]!=null }"
+                        value="{{sudoku[5][1][1]}}"></ion-input>
+                      </td>
+                      <td>
+                        <ion-input type="number"
+                        [disabled]="sudoku[5][1][2]!=null"
+                        [ngClass]="{'nonzero': sudoku[5][1][2]!=null }"
+                        value="{{sudoku[5][1][2]}}"></ion-input>
+                      </td>
+
+                </tr>
+                  
+                <tr>
+
+                      <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[3][2][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[3][2][0]!=null }"
+                          value="{{sudoku[3][2][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[3][2][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[3][2][1]!=null }"
+                          value="{{sudoku[3][2][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[3][2][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[3][2][2]!=null }"
+                          value="{{sudoku[3][2][2]}}"></ion-input>
+                        </td>
+                  
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[4][2][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[4][2][0]!=null }"
+                          value="{{sudoku[4][2][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[4][2][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[4][2][1]!=null }"
+                          value="{{sudoku[4][2][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[4][2][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[4][2][2]!=null }"
+                          value="{{sudoku[4][2][2]}}"></ion-input>
+                        </td>
+
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[5][2][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[5][2][0]!=null }"
+                          value="{{sudoku[5][2][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[5][2][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[5][2][1]!=null }"
+                          value="{{sudoku[5][2][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[5][2][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[5][2][2]!=null }"
+                          value="{{sudoku[5][2][2]}}"></ion-input>
+                        </td>
+
+                    </tr> 
+
+
+                    <tr>
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[6][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[6][0][0]!=null }"
+                          value="{{sudoku[6][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[6][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[6][0][1]!=null }"
+                          value="{{sudoku[6][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[6][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[6][0][2]!=null }"
+                          value="{{sudoku[6][0][2]}}"></ion-input>
+                        </td>
+                  
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[7][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[7][0][0]!=null }"
+                          value="{{sudoku[7][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[7][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[7][0][1]!=null }"
+                          value="{{sudoku[7][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[7][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[7][0][2]!=null }"
+                          value="{{sudoku[7][0][2]}}"></ion-input>
+                        </td>
+
+
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[8][0][0]!=null"
+                          [ngClass]="{'nonzero': sudoku[8][0][0]!=null }"
+                          value="{{sudoku[8][0][0]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[8][0][1]!=null"
+                          [ngClass]="{'nonzero': sudoku[8][0][1]!=null }"
+                          value="{{sudoku[8][0][1]}}"></ion-input>
+                        </td>
+                        <td>
+                          <ion-input type="number"
+                          [disabled]="sudoku[8][0][2]!=null"
+                          [ngClass]="{'nonzero': sudoku[8][0][2]!=null }"
+                          value="{{sudoku[8][0][2]}}"></ion-input>
+                        </td>
+
+                    </tr>
+                    
+                    <tr>
+
+                        <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[6][1][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[6][1][0]!=null }"
+                            value="{{sudoku[6][1][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[6][1][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[6][1][1]!=null }"
+                            value="{{sudoku[6][1][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[6][1][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[6][1][2]!=null }"
+                            value="{{sudoku[6][1][2]}}"></ion-input>
+                          </td>
+                    
+        
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[7][1][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[7][1][0]!=null }"
+                            value="{{sudoku[7][1][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[7][1][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[7][1][1]!=null }"
+                            value="{{sudoku[7][1][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[7][1][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[7][1][2]!=null }"
+                            value="{{sudoku[7][1][2]}}"></ion-input>
+                          </td>
+        
+        
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[8][1][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[8][1][0]!=null }"
+                            value="{{sudoku[8][1][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[8][1][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[8][1][1]!=null }"
+                            value="{{sudoku[8][1][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[8][1][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[8][1][2]!=null }"
+                            value="{{sudoku[8][1][2]}}"></ion-input>
+                          </td>
+
+                    </tr>
+                    
+                    <tr>
+
+                        <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[6][2][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[6][2][0]!=null }"
+                            value="{{sudoku[6][2][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[6][2][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[6][2][1]!=null }"
+                            value="{{sudoku[6][2][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[6][2][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[6][2][2]!=null }"
+                            value="{{sudoku[6][2][2]}}"></ion-input>
+                          </td>
+                    
+        
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[7][2][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[7][2][0]!=null }"
+                            value="{{sudoku[7][2][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[7][2][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[7][2][1]!=null }"
+                            value="{{sudoku[7][2][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[7][2][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[7][2][2]!=null }"
+                            value="{{sudoku[7][2][2]}}"></ion-input>
+                          </td>
+        
+        
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[8][2][0]!=null"
+                            [ngClass]="{'nonzero': sudoku[8][2][0]!=null }"
+                            value="{{sudoku[8][2][0]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[8][2][1]!=null"
+                            [ngClass]="{'nonzero': sudoku[8][2][1]!=null }"
+                            value="{{sudoku[8][2][1]}}"></ion-input>
+                          </td>
+                          <td>
+                            <ion-input type="number"
+                            [disabled]="sudoku[8][2][2]!=null"
+                            [ngClass]="{'nonzero': sudoku[8][2][2]!=null }"
+                            value="{{sudoku[8][2][2]}}"></ion-input>
+                          </td>
+                    </tr>  
+                </table>
+                <div padding style="text-align: center">
+                    <button ion-button  full round [disabled]="!isReady" (click)="solveSudokuFromApi(sudoku)" color="secondary">Resolver</button>
+                </div>
+                <div padding style="text-align: center">
+                    <button ion-button  full round *ngIf="isReady"  (click)="getRandomSudoku()" color="primary">Procurar mais um Sudoku</button>
+                </div>
+            </ion-card-content>
+             
+        </ion-card>
+      </div>
+  </div>
+</ion-content>
