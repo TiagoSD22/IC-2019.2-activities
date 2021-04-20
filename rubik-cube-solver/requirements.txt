@@ -49,7 +49,7 @@ Pillow==5.4.1
 pluggy==0.8.0
 prelude==4.1.0
 psutil==5.5.1
-py==1.7.0
+py==1.10.0
 py-radix==0.10.0
 pyalsa==1.1.6
 pyasn1==0.4.2
